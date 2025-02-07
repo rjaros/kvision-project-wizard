@@ -1,10 +1,10 @@
-javaVersion=17
+javaVersion=21
 #Plugins
 systemProp.kotlinVersion=${kotlin_version}
 #Dependencies
 systemProp.kvisionVersion=${kvision_version}
 systemProp.joobyVersion=${jooby_version}
-logbackVersion=1.5.8
+logbackVersion=1.5.16
 
 kotlin.mpp.stability.nowarn=true
 org.gradle.jvmargs=-Xmx2g

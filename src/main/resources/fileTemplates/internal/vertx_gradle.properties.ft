@@ -1,11 +1,11 @@
-javaVersion=17
+javaVersion=21
 #Plugins
 systemProp.kotlinVersion=${kotlin_version}
 #Dependencies
 systemProp.kvisionVersion=${kvision_version}
 systemProp.vertxPluginVersion=${vertx_plugin_version}
-systemProp.shadowVersion=8.3.0
-logbackVersion=1.5.8
+systemProp.shadowVersion=8.3.3
+logbackVersion=1.5.16
 
 kotlin.mpp.stability.nowarn=true
 org.gradle.jvmargs=-Xmx2g

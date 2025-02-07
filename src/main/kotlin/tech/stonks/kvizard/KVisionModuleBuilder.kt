@@ -5,17 +5,19 @@ import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.module.ModuleType
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.file.PsiDirectoryFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.jetbrains.plugins.gradle.service.project.GradleAutoImportAware
-import org.jetbrains.plugins.gradle.service.project.open.linkAndRefreshGradleProject
+import org.jetbrains.plugins.gradle.service.project.open.linkAndSyncGradleProject
 import tech.stonks.kvizard.data.VersionApi
 import tech.stonks.kvizard.data.model.TemplateJooby
 import tech.stonks.kvizard.data.model.TemplateKtor
@@ -36,10 +38,11 @@ import tech.stonks.kvizard.generator.VertxTreeGenerator
 import tech.stonks.kvizard.step.library_choice.LibraryChoiceStep
 import tech.stonks.kvizard.utils.RunConfigurationUtil
 import tech.stonks.kvizard.utils.backgroundTask
-import tech.stonks.kvizard.utils.runGradle
 import java.io.File
 
 class KVisionModuleBuilder : ModuleBuilder() {
+
+    val kvScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     val versionData by lazy { fetchVersionData() }
 
@@ -75,9 +78,9 @@ class KVisionModuleBuilder : ModuleBuilder() {
                 RunConfigurationUtil.createFullstackConfiguration(modifiableRootModel.project)
             }
             GradleAutoImportAware()
-            invokeLater {
+            kvScope.launch {
                 val projectFilePath = root.canonicalPath + "/build.gradle.kts"
-                linkAndRefreshGradleProject(projectFilePath, modifiableRootModel.project)
+                linkAndSyncGradleProject(modifiableRootModel.project, projectFilePath)
             }
         }
     }
@@ -114,13 +117,13 @@ class KVisionModuleBuilder : ModuleBuilder() {
             VersionApi.create().getVersionData().blockingGet()
         } catch (ex: Exception) {
             VersionData(
-                kVision = "8.0.0",
-                kotlin = "2.0.20",
-                coroutines = "1.9.0-RC.2",
-                templateJooby = TemplateJooby("3.3.0"),
-                templateKtor = TemplateKtor(ktor = "2.3.12", koinAnnotations = "1.4.0-RC3"),
-                templateMicronaut = TemplateMicronaut(micronaut = "4.6.1", micronautPlugins = "4.4.2"),
-                templateSpring = TemplateSpring(springBoot = "3.3.3"),
+                kVision = "8.2.0",
+                kotlin = "2.1.10",
+                coroutines = "1.10.1",
+                templateJooby = TemplateJooby("3.6.0"),
+                templateKtor = TemplateKtor(ktor = "3.0.3", koinAnnotations = "2.0.0-RC1"),
+                templateMicronaut = TemplateMicronaut(micronaut = "4.7.5", micronautPlugins = "4.4.5"),
+                templateSpring = TemplateSpring(springBoot = "3.4.2"),
                 templateVertx = TemplateVertx(vertxPlugin = "1.4.0"),
                 modules = emptyList()
             )

@@ -1,4 +1,4 @@
-javaVersion=17
+javaVersion=21
 #Plugins
 systemProp.kotlinVersion=${kotlin_version}
 #Dependencies
