@@ -18,11 +18,6 @@ plugins {
 version = "1.0.0-SNAPSHOT"
 group = "${GROUP_ID}"
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 // Versions
 val kotlinVersion: String by System.getProperties()
 val kvisionVersion: String by System.getProperties()
@@ -40,7 +35,7 @@ allOpen {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
     jvm {
         withJava()
         @OptIn(ExperimentalKotlinGradlePluginApi::class)

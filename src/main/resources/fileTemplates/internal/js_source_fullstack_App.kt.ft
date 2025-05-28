@@ -5,16 +5,14 @@ import io.kvision.CoreModule
 #foreach( ${initializer} in ${selected_initializers} )
 import io.kvision.${initializer}
 #end
+import io.kvision.Hot
 import io.kvision.html.Span
 #if ( ${i18n_included} )
 import io.kvision.i18n.DefaultI18nManager
 import io.kvision.i18n.I18n
 #end
-import io.kvision.module
 import io.kvision.panel.root
-#if ( ${i18n_included} )
-import io.kvision.require
-#end
+import io.kvision.remote.registerRemoteTypes
 import io.kvision.startApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +21,14 @@ import kotlinx.coroutines.launch
 
 val AppScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
+#if ( ${i18n_included} )
+@JsModule("/kotlin/modules/i18n/messages-en.json")
+external val messagesEn: dynamic
+
+@JsModule("/kotlin/modules/i18n/messages-pl.json")
+external val messagesPl: dynamic
+
+#end
 class App : Application() {
 
     override fun start(state: Map<String, Any>) {
@@ -30,8 +36,8 @@ class App : Application() {
         I18n.manager =
             DefaultI18nManager(
                 mapOf(
-                    "en" to require("i18n/messages-en.json"),
-                    "pl" to require("i18n/messages-pl.json")
+                    "en" to messagesEn,
+                    "pl" to messagesPl
                 )
             )
 
@@ -46,9 +52,10 @@ class App : Application() {
 }
 
 fun main() {
+    registerRemoteTypes()
     startApplication(
         ::App,
-        module.hot,
+        js("import.meta.webpackHot").unsafeCast<Hot?>(),
 #foreach( ${initializer} in ${selected_initializers} )
         ${initializer},
 #end

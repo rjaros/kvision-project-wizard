@@ -1,10 +1,11 @@
 package ${PACKAGE_NAME}
 
-import io.kvision.remote.getAllServiceManagers
+import dev.kilua.rpc.getAllServiceManagers
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import io.kvision.remote.registerRemoteTypes
 
 @SpringBootApplication
 @EnableAutoConfiguration(
@@ -19,5 +20,6 @@ class KVApplication {
 }
 
 fun main(args: Array<String>) {
+    registerRemoteTypes()
     runApplication<KVApplication>(*args)
 }

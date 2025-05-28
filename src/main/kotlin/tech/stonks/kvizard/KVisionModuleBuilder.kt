@@ -5,41 +5,40 @@ import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.module.ModuleType
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.file.PsiDirectoryFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.jetbrains.plugins.gradle.service.project.GradleAutoImportAware
-import org.jetbrains.plugins.gradle.service.project.open.linkAndRefreshGradleProject
+import org.jetbrains.plugins.gradle.service.project.open.linkAndSyncGradleProject
 import tech.stonks.kvizard.data.VersionApi
 import tech.stonks.kvizard.data.model.TemplateJooby
 import tech.stonks.kvizard.data.model.TemplateKtor
 import tech.stonks.kvizard.data.model.TemplateMicronaut
 import tech.stonks.kvizard.data.model.TemplateSpring
-import tech.stonks.kvizard.data.model.TemplateVertx
 import tech.stonks.kvizard.data.model.VersionData
 import tech.stonks.kvizard.generator.FrontendTreeGenerator
 import tech.stonks.kvizard.generator.JavalinTreeGenerator
 import tech.stonks.kvizard.generator.JoobyTreeGenerator
-import tech.stonks.kvizard.generator.KtorKoinAnnotTreeGenerator
-import tech.stonks.kvizard.generator.KtorKoinTreeGenerator
 import tech.stonks.kvizard.generator.KtorTreeGenerator
-import tech.stonks.kvizard.generator.MicronautTreeGenerator
 import tech.stonks.kvizard.generator.SpringTreeGenerator
 import tech.stonks.kvizard.generator.TreeGenerator
 import tech.stonks.kvizard.generator.VertxTreeGenerator
 import tech.stonks.kvizard.step.library_choice.LibraryChoiceStep
 import tech.stonks.kvizard.utils.RunConfigurationUtil
 import tech.stonks.kvizard.utils.backgroundTask
-import tech.stonks.kvizard.utils.runGradle
 import java.io.File
 
 class KVisionModuleBuilder : ModuleBuilder() {
+
+    val kvScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     val versionData by lazy { fetchVersionData() }
 
@@ -75,9 +74,9 @@ class KVisionModuleBuilder : ModuleBuilder() {
                 RunConfigurationUtil.createFullstackConfiguration(modifiableRootModel.project)
             }
             GradleAutoImportAware()
-            invokeLater {
+            kvScope.launch {
                 val projectFilePath = root.canonicalPath + "/build.gradle.kts"
-                linkAndRefreshGradleProject(projectFilePath, modifiableRootModel.project)
+                linkAndSyncGradleProject(modifiableRootModel.project, projectFilePath)
             }
         }
     }
@@ -85,13 +84,11 @@ class KVisionModuleBuilder : ModuleBuilder() {
     private fun createGenerator(): TreeGenerator {
         return when (projectType) {
             KVisionProjectType.FRONTEND_ONLY -> FrontendTreeGenerator()
-            KVisionProjectType.KTOR_KOIN -> KtorKoinTreeGenerator()
-            KVisionProjectType.KTOR_KOIN_ANNOT -> KtorKoinAnnotTreeGenerator()
             KVisionProjectType.KTOR -> KtorTreeGenerator()
             KVisionProjectType.SPRING_BOOT -> SpringTreeGenerator()
             KVisionProjectType.JAVALIN -> JavalinTreeGenerator()
             KVisionProjectType.JOOBY -> JoobyTreeGenerator()
-            KVisionProjectType.MICRONAUT -> MicronautTreeGenerator()
+//            KVisionProjectType.MICRONAUT -> MicronautTreeGenerator()
             KVisionProjectType.VERTX -> VertxTreeGenerator()
         }
     }
@@ -114,14 +111,16 @@ class KVisionModuleBuilder : ModuleBuilder() {
             VersionApi.create().getVersionData().blockingGet()
         } catch (ex: Exception) {
             VersionData(
-                kVision = "8.0.0",
-                kotlin = "2.0.20",
-                coroutines = "1.9.0-RC.2",
-                templateJooby = TemplateJooby("3.3.0"),
-                templateKtor = TemplateKtor(ktor = "2.3.12", koinAnnotations = "1.4.0-RC3"),
-                templateMicronaut = TemplateMicronaut(micronaut = "4.6.1", micronautPlugins = "4.4.2"),
-                templateSpring = TemplateSpring(springBoot = "3.3.3"),
-                templateVertx = TemplateVertx(vertxPlugin = "1.4.0"),
+                kvision = "9.1.0",
+                kotlin = "2.2.0-RC",
+                coroutines = "1.10.2",
+                ksp = "2.2.0-RC-2.0.1",
+                kiluaRpc = "0.0.34",
+                logback = "1.5.18",
+                templateJooby = TemplateJooby("3.8.1"),
+                templateKtor = TemplateKtor(ktor = "3.1.3"),
+                templateMicronaut = TemplateMicronaut(micronaut = "4.8.2", micronautPlugins = "4.5.3"),
+                templateSpring = TemplateSpring(springBoot = "3.5.0"),
                 modules = emptyList()
             )
         }

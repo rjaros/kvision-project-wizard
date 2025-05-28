@@ -4,6 +4,10 @@ plugins {
     val kotlinVersion: String by System.getProperties()
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
+    val kspVersion: String by System.getProperties()
+    id("com.google.devtools.ksp") version kspVersion
+    val kiluaRpcVersion: String by System.getProperties()
+    id("dev.kilua.rpc") version kiluaRpcVersion
     val joobyVersion: String by System.getProperties()
     id("io.jooby.run") version joobyVersion
     val kvisionVersion: String by System.getProperties()
@@ -13,23 +17,17 @@ plugins {
 version = "1.0.0-SNAPSHOT"
 group = "${GROUP_ID}"
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 // Versions
-val kotlinVersion: String by System.getProperties()
 val kvisionVersion: String by System.getProperties()
+val kiluaRpcVersion: String by System.getProperties()
 val joobyVersion: String by System.getProperties()
 val logbackVersion: String by project
 
 val mainClassNameVal = "${GROUP_ID}.${ARTIFACT_ID}.MainKt"
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
     jvm {
-        withJava()
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -41,6 +39,7 @@ kotlin {
     }
     js(IR) {
         browser {
+            useEsModules()
             commonWebpackConfig {
                 outputFileName = "main.bundle.js"
                 sourceMaps = false
@@ -52,11 +51,15 @@ kotlin {
             }
         }
         binaries.executable()
+        compilerOptions {
+            target.set("es2015")
+        }
     }
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("io.kvision:kvision-server-jooby:$kvisionVersion")
+                implementation("dev.kilua:kilua-rpc-jooby:$kiluaRpcVersion")
+                implementation("io.kvision:kvision-common-remote:$kvisionVersion")
             }
         }
         val commonTest by getting {
@@ -67,9 +70,7 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("reflect"))
                 implementation("io.jooby:jooby-netty:$joobyVersion")
-                implementation("io.jooby:jooby-hikari:$joobyVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
             }
         }

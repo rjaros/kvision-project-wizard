@@ -4,11 +4,17 @@ import com.google.gson.annotations.SerializedName
 
 data class VersionData(
     @SerializedName("kvision")
-    val kVision: String,
+    val kvision: String,
     @SerializedName("kotlin")
     val kotlin: String,
     @SerializedName("coroutines")
     val coroutines: String,
+    @SerializedName("ksp")
+    val ksp: String,
+    @SerializedName("kilua-rpc")
+    val kiluaRpc: String,
+    @SerializedName("logback")
+    val logback: String,
     @SerializedName("template-jooby")
     val templateJooby: TemplateJooby,
     @SerializedName("template-ktor")
@@ -17,8 +23,6 @@ data class VersionData(
     val templateMicronaut: TemplateMicronaut,
     @SerializedName("template-spring-boot")
     val templateSpring: TemplateSpring,
-    @SerializedName("template-vertx")
-    val templateVertx: TemplateVertx,
     @SerializedName("modules")
     val modules: List<Module>
 )
@@ -30,10 +34,7 @@ data class TemplateJooby(
 
 data class TemplateKtor(
     @SerializedName("ktor")
-    val ktor: String,
-
-    @SerializedName("koin-annotations")
-    val koinAnnotations: String
+    val ktor: String
 )
 
 data class TemplateMicronaut(
@@ -46,11 +47,6 @@ data class TemplateMicronaut(
 data class TemplateSpring(
     @SerializedName("spring-boot")
     val springBoot: String
-)
-
-data class TemplateVertx(
-    @SerializedName("vertx-plugin")
-    val vertxPlugin: String
 )
 
 data class Module(
