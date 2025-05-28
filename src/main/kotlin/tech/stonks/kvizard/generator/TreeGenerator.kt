@@ -51,6 +51,7 @@ abstract class TreeGenerator(
         "file.js",
         "handlebars.js",
         "proxy.js",
+        "tailwind.js",
         "webpack.js"
     ),
     private val commonFiles: Array<String> = arrayOf(
@@ -63,17 +64,22 @@ abstract class TreeGenerator(
         "App.kt",
         "Model.kt"
     ),
-    private val jsWebFiles: Array<String> = arrayOf(
+    private val jsResourcesFiles: Array<String> = arrayOf(
         "index.html"
     ),
-    private val jsResourcesFiles: Array<String> = arrayOf(
+    private val jsResourcesI18nFiles: Array<String> = arrayOf(
         "messages.pot",
         "messages-en.po",
         "messages-pl.po"
     ),
+    private val jsResourcesTailwindcssFiles: Array<String> = arrayOf(
+        "tailwind.config.js",
+        "tailwind.twcss"
+    ),
     private val jsTestFiles: Array<String> = arrayOf("AppSpec.kt"),
     private val ideaFiles: Array<String> = arrayOf("gradle.xml"),
-    private val gradleWrapperFiles: Array<String> = arrayOf("gradle-wrapper.jar", "gradle-wrapper.properties")
+    private val gradleWrapperFiles: Array<String> = arrayOf("gradle-wrapper.jar", "gradle-wrapper.properties"),
+    private val subApplicationFiles: Array<String> = arrayOf(),
 ) {
     fun generate(
         root: VirtualFile,
@@ -156,14 +162,24 @@ abstract class TreeGenerator(
                                 }
                             }
                         }
-                        dir("web") {
-                            jsWebFiles.forEach { fileName -> file(fileName, "js_web_$fileName", attrs) }
-
-                        }
-                        if (modules.contains("kvision-i18n")) {
-                            dir("resources") {
-                                dir("i18n") {
-                                    jsResourcesFiles.forEach { fileName ->
+                        dir("resources") {
+                            jsResourcesFiles.forEach { fileName -> file(fileName, "js_resources_$fileName", attrs) }
+                            if (modules.contains("kvision-i18n")) {
+                                dir("modules") {
+                                    dir("i18n") {
+                                        jsResourcesI18nFiles.forEach { fileName ->
+                                            file(
+                                                fileName,
+                                                "js_resources_$fileName",
+                                                attrs
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            if (modules.contains("kvision-tailwindcss")) {
+                                dir("tailwind") {
+                                    jsResourcesTailwindcssFiles.forEach { fileName ->
                                         file(
                                             fileName,
                                             "js_resources_$fileName",
@@ -219,6 +235,17 @@ abstract class TreeGenerator(
                     )
                 }
                 mdFiles.forEach { fileName -> file(fileName, "${templateName}_${fileName}", attrs) }
+                if (subApplicationFiles.isNotEmpty()) {
+                    dir("application") {
+                        subApplicationFiles.forEach { fileName ->
+                            file(
+                                fileName,
+                                "${templateName}_application_$fileName",
+                                attrs
+                            )
+                        }
+                    }
+                }
             }
             root.refresh(false, true)
         } catch (ex: Exception) {
@@ -241,14 +268,15 @@ abstract class TreeGenerator(
             TemplateAttributes.PACKAGE_NAME to "${groupId}.${artifactId}",
             "kotlin_version" to versionData.kotlin,
             "ktor_version" to versionData.templateKtor.ktor,
-            "koin_annotations_version" to versionData.templateKtor.koinAnnotations,
-            "kvision_version" to versionData.kVision,
+            "kvision_version" to versionData.kvision,
             "coroutines_version" to versionData.coroutines,
+            "ksp_version" to versionData.ksp,
+            "kilua_rpc_version" to versionData.kiluaRpc,
+            "logback_version" to versionData.logback,
             "jooby_version" to versionData.templateJooby.jooby,
             "micronaut_version" to versionData.templateMicronaut.micronaut,
             "micronaut_plugins_version" to versionData.templateMicronaut.micronautPlugins,
             "spring_boot_version" to versionData.templateSpring.springBoot,
-            "vertx_plugin_version" to versionData.templateVertx.vertxPlugin,
             "selected_modules" to modules,
             "selected_initializers" to initializers,
             "i18n_included" to modules.contains("kvision-i18n"),

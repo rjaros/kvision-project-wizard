@@ -5,27 +5,32 @@ import io.kvision.CoreModule
 #foreach( ${initializer} in ${selected_initializers} )
 import io.kvision.${initializer}
 #end
+import io.kvision.Hot
 import io.kvision.html.div
 #if ( ${i18n_included} )
 import io.kvision.i18n.DefaultI18nManager
 import io.kvision.i18n.I18n
 import io.kvision.i18n.tr
 #end
-import io.kvision.module
 import io.kvision.panel.root
-#if ( ${i18n_included} )
-import io.kvision.require
-#end
 import io.kvision.startApplication
 
+#if ( ${i18n_included} )
+@JsModule("/kotlin/modules/i18n/messages-en.json")
+external val messagesEn: dynamic
+
+@JsModule("/kotlin/modules/i18n/messages-pl.json")
+external val messagesPl: dynamic
+
+#end
 class App : Application() {
     override fun start() {
 #if ( ${i18n_included} )
         I18n.manager =
             DefaultI18nManager(
                 mapOf(
-                    "pl" to require("i18n/messages-pl.json"),
-                    "en" to require("i18n/messages-en.json")
+                    "en" to messagesEn,
+                    "pl" to messagesPl
                 )
             )
 
@@ -44,7 +49,7 @@ class App : Application() {
 fun main() {
     startApplication(
         ::App,
-        module.hot,
+        js("import.meta.webpackHot").unsafeCast<Hot?>(),
 #foreach( ${initializer} in ${selected_initializers} )
         ${initializer},
 #end

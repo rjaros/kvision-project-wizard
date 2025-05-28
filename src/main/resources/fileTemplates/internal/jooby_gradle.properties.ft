@@ -1,10 +1,9 @@
-javaVersion=21
-#Plugins
 systemProp.kotlinVersion=${kotlin_version}
-#Dependencies
+systemProp.kspVersion=${ksp_version}
+systemProp.kiluaRpcVersion=${kilua_rpc_version}
 systemProp.kvisionVersion=${kvision_version}
 systemProp.joobyVersion=${jooby_version}
-logbackVersion=1.5.16
+logbackVersion=${logback_version}
 
-kotlin.mpp.stability.nowarn=true
 org.gradle.jvmargs=-Xmx2g
+kotlin.js.ir.output.granularity=per-file

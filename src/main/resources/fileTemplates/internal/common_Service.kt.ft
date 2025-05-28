@@ -1,8 +1,8 @@
 package ${PACKAGE_NAME}
 
-import io.kvision.annotations.KVService
+import dev.kilua.rpc.annotations.RpcService
 
-@KVService
+@RpcService
 interface IPingService {
     suspend fun ping(message: String): String
 }

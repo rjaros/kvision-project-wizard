@@ -4,10 +4,10 @@ plugins {
     val kotlinVersion: String by System.getProperties()
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
-    val vertxPluginVersion: String by System.getProperties()
-    id("io.vertx.vertx-plugin") version vertxPluginVersion
-    val shadowVersion: String by System.getProperties()
-    id("com.gradleup.shadow") version shadowVersion
+    val kspVersion: String by System.getProperties()
+    id("com.google.devtools.ksp") version kspVersion
+    val kiluaRpcVersion: String by System.getProperties()
+    id("dev.kilua.rpc") version kiluaRpcVersion
     val kvisionVersion: String by System.getProperties()
     id("io.kvision") version kvisionVersion
 }
@@ -15,27 +15,29 @@ plugins {
 version = "1.0.0-SNAPSHOT"
 group = "${GROUP_ID}"
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 // Versions
-val kotlinVersion: String by System.getProperties()
 val kvisionVersion: String by System.getProperties()
+val kiluaRpcVersion: String by System.getProperties()
 val logbackVersion: String by project
+
+extra["mainClassName"] = "${PACKAGE_NAME}.MainVerticle"
 
 kotlin {
     jvmToolchain(21)
     jvm {
-        withJava()
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
         }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        mainRun {
+            mainClass.set("io.vertx.launcher.application.VertxApplication")
+            args(project.extra["mainClassName"]!!)
+        }
     }
     js(IR) {
         browser {
+            useEsModules()
             commonWebpackConfig {
                 outputFileName = "main.bundle.js"
                 sourceMaps = false
@@ -47,11 +49,15 @@ kotlin {
             }
         }
         binaries.executable()
+        compilerOptions {
+            target.set("es2015")
+        }
     }
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("io.kvision:kvision-server-vertx:$kvisionVersion")
+                implementation("dev.kilua:kilua-rpc-vertx:$kiluaRpcVersion")
+                implementation("io.kvision:kvision-common-remote:$kvisionVersion")
             }
         }
         val commonTest by getting {
@@ -62,7 +68,6 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("reflect"))
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
             }
         }
@@ -87,9 +92,4 @@ kotlin {
             }
         }
     }
-}
-
-vertx {
-    mainVerticle = "${PACKAGE_NAME}.MainVerticle"
-    jvmArgs = listOf("-Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory")
 }

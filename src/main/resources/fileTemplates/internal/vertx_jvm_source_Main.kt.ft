@@ -1,16 +1,24 @@
 package ${PACKAGE_NAME}
 
-import io.kvision.remote.applyRoutes
-import io.kvision.remote.getServiceManager
-import io.kvision.remote.kvisionInit
+import dev.kilua.rpc.applyRoutes
+import dev.kilua.rpc.getAllServiceManagers
+import dev.kilua.rpc.initRpc
+import dev.kilua.rpc.registerService
 import io.vertx.core.AbstractVerticle
 import io.vertx.ext.web.Router
+import io.kvision.remote.registerRemoteTypes
 
 class MainVerticle : AbstractVerticle() {
     override fun start() {
+        registerRemoteTypes()
         val router = Router.router(vertx)
-        vertx.kvisionInit(router)
-        vertx.applyRoutes(router, getServiceManager<IPingService>())
-        vertx.createHttpServer().requestHandler(router).listen(8080)
+        val server = vertx.createHttpServer()
+        vertx.initRpc(router, server, getAllServiceManagers()) {
+            registerService<IPingService> { PingService() }
+        }
+        getAllServiceManagers().forEach {
+            vertx.applyRoutes(router, it)
+        }
+        server.requestHandler(router).listen(8080)
     }
 }

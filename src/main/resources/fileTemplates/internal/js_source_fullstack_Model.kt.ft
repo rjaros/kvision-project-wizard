@@ -1,6 +1,6 @@
 package ${PACKAGE_NAME}
 
-import io.kvision.remote.getService
+import dev.kilua.rpc.getService
 
 object Model {
 
