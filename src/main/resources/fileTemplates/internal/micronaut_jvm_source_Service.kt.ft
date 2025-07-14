@@ -3,8 +3,7 @@ package ${PACKAGE_NAME}
 import io.micronaut.context.annotation.Prototype
 
 @Prototype
-@Suppress("ACTUAL_WITHOUT_EXPECT")
-actual class PingService : IPingService {
+class PingService : IPingService {
 
     override suspend fun ping(message: String): String {
         println(message)

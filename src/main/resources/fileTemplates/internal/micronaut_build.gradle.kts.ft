@@ -5,47 +5,39 @@ plugins {
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.allopen") version kotlinVersion
-    kotlin("kapt") version kotlinVersion
-    val shadowVersion: String by System.getProperties()
-    id("com.gradleup.shadow") version shadowVersion
+    val kspVersion: String by System.getProperties()
+    id("com.google.devtools.ksp") version kspVersion
+    val kiluaRpcVersion: String by System.getProperties()
+    id("dev.kilua.rpc") version kiluaRpcVersion
     val kvisionVersion: String by System.getProperties()
     id("io.kvision") version kvisionVersion
-    val micronautPluginsVersion: String by System.getProperties()
-    id("io.micronaut.application") version micronautPluginsVersion
-    id("io.micronaut.aot") version micronautPluginsVersion
 }
 
 version = "1.0.0-SNAPSHOT"
 group = "${GROUP_ID}"
 
 // Versions
-val kotlinVersion: String by System.getProperties()
 val kvisionVersion: String by System.getProperties()
+val kiluaRpcVersion: String by System.getProperties()
 val micronautVersion: String by project
-val coroutinesVersion: String by project
 
-val mainClassNameVal = "${GROUP_ID}.${ARTIFACT_ID}.MainKt"
-
-application {
-    mainClass.set(mainClassNameVal)
-}
-
-allOpen {
-    annotation("io.micronaut.aop.Around")
-}
+extra["mainClassName"] = "${GROUP_ID}.${ARTIFACT_ID}.MainKt"
 
 kotlin {
     jvmToolchain(21)
     jvm {
-        withJava()
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            javaParameters = true
+        }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        mainRun {
+            mainClass.set(project.extra["mainClassName"]!!.toString())
         }
     }
     js(IR) {
         browser {
+            useEsModules()
             commonWebpackConfig {
                 outputFileName = "main.bundle.js"
                 sourceMaps = false
@@ -57,11 +49,15 @@ kotlin {
             }
         }
         binaries.executable()
+        compilerOptions {
+            target.set("es2015")
+        }
     }
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("io.kvision:kvision-server-micronaut:$kvisionVersion")
+                implementation("dev.kilua:kilua-rpc-micronaut:$kiluaRpcVersion")
+                implementation("io.kvision:kvision-common-remote:$kvisionVersion")
             }
         }
         val commonTest by getting {
@@ -113,51 +109,7 @@ kotlin {
     }
 }
 
-micronaut {
-    runtime("netty")
-    processing {
-        incremental(true)
-        annotations("${PACKAGE_NAME}.*")
-    }
-    aot {
-        optimizeServiceLoading.set(false)
-        convertYamlToJava.set(false)
-        precomputeOperations.set(true)
-        cacheEnvironment.set(true)
-        optimizeClassLoading.set(true)
-        deduceEnvironment.set(true)
-        optimizeNetty.set(true)
-    }
-}
-
-tasks {
-    withType<JavaExec> {
-        jvmArgs("-XX:TieredStopAtLevel=1", "-Dcom.sun.management.jmxremote")
-        if (gradle.startParameter.isContinuous) {
-            systemProperties(
-                mapOf(
-                    "micronaut.io.watch.restart" to "true",
-                    "micronaut.io.watch.enabled" to "true",
-                    "micronaut.io.watch.paths" to "src/jvmMain"
-                )
-            )
-        }
-    }
-}
-
-kapt {
-    arguments {
-        arg("micronaut.processing.incremental", true)
-        arg("micronaut.processing.annotations", "${PACKAGE_NAME}.*")
-        arg("micronaut.processing.group", "${GROUP_ID}")
-        arg("micronaut.processing.module", "${ARTIFACT_ID}")
-    }
-}
-
 dependencies {
-    "kapt"(platform("io.micronaut.platform:micronaut-platform:$micronautVersion"))
-    "kapt"("io.micronaut:micronaut-inject-java")
-    "kapt"("io.micronaut.validation:micronaut-validation")
-    "kaptTest"(platform("io.micronaut.platform:micronaut-platform:$micronautVersion"))
-    "kaptTest"("io.micronaut:micronaut-inject-java")
+    add("kspJvm", platform("io.micronaut.platform:micronaut-platform:$micronautVersion"))
+    add("kspJvm", "io.micronaut:micronaut-inject-kotlin")
 }

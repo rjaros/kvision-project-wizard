@@ -3,6 +3,12 @@
     <name>KVision Project Wizard</name>
     <vendor email="jakub.neukirch@stonks.tech" url="https://stonks.tech">Stonks.tech</vendor>
     <change-notes>
+        &lt;i&gt;Version 0.10.1:&lt;/i&gt;
+        &lt;ul&gt;
+        &lt;li&gt;Upgrade to KVision 9.1.1&lt;/li&gt;
+        &lt;li&gt;Upgrade to IntelliJ IDEA 2025.1.3&lt;/li&gt;
+        &lt;li&gt;Restore Micronaut support&lt;/li&gt;
+        &lt;/ul&gt;
         &lt;i&gt;Version 0.10.0:&lt;/i&gt;
         &lt;ul&gt;
             &lt;li&gt;Upgrade to KVision 9.1.0&lt;/li&gt;

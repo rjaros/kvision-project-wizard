@@ -35,7 +35,7 @@ enum class KVisionProjectType(val displayName: String) {
     SPRING_BOOT("Fullstack project with Spring Boot"),
     JAVALIN("Fullstack project with Javalin"),
     JOOBY("Fullstack project with Jooby"),
-//    MICRONAUT("Fullstack project with Micronaut"),
+    MICRONAUT("Fullstack project with Micronaut"),
     VERTX("Fullstack project with Vert.x"),
 }
 
@@ -45,6 +45,6 @@ val supportedProjectTypes = arrayOf(
     KVisionProjectType.SPRING_BOOT,
     KVisionProjectType.JAVALIN,
     KVisionProjectType.JOOBY,
-//    KVisionProjectType.MICRONAUT,
+    KVisionProjectType.MICRONAUT,
     KVisionProjectType.VERTX
 )
