@@ -4,5 +4,6 @@ class MicronautTreeGenerator : TreeGenerator(
     "micronaut",
     false,
     jvmFiles = arrayOf("Main.kt", "Service.kt"),
-    jvmResourcesFiles = arrayOf("application.yml", "logback.xml")
+    jvmResourcesFiles = arrayOf("application.yml", "logback.xml"),
+    subApplicationFiles = arrayOf("build.gradle.kts"),
 )

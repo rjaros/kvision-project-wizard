@@ -28,6 +28,7 @@ import tech.stonks.kvizard.generator.FrontendTreeGenerator
 import tech.stonks.kvizard.generator.JavalinTreeGenerator
 import tech.stonks.kvizard.generator.JoobyTreeGenerator
 import tech.stonks.kvizard.generator.KtorTreeGenerator
+import tech.stonks.kvizard.generator.MicronautTreeGenerator
 import tech.stonks.kvizard.generator.SpringTreeGenerator
 import tech.stonks.kvizard.generator.TreeGenerator
 import tech.stonks.kvizard.generator.VertxTreeGenerator
@@ -88,7 +89,7 @@ class KVisionModuleBuilder : ModuleBuilder() {
             KVisionProjectType.SPRING_BOOT -> SpringTreeGenerator()
             KVisionProjectType.JAVALIN -> JavalinTreeGenerator()
             KVisionProjectType.JOOBY -> JoobyTreeGenerator()
-//            KVisionProjectType.MICRONAUT -> MicronautTreeGenerator()
+            KVisionProjectType.MICRONAUT -> MicronautTreeGenerator()
             KVisionProjectType.VERTX -> VertxTreeGenerator()
         }
     }
@@ -111,16 +112,16 @@ class KVisionModuleBuilder : ModuleBuilder() {
             VersionApi.create().getVersionData().blockingGet()
         } catch (ex: Exception) {
             VersionData(
-                kvision = "9.1.0",
-                kotlin = "2.2.0-RC",
+                kvision = "9.1.1",
+                kotlin = "2.2.0",
                 coroutines = "1.10.2",
-                ksp = "2.2.0-RC-2.0.1",
-                kiluaRpc = "0.0.34",
+                ksp = "2.2.0-2.0.2",
+                kiluaRpc = "0.0.35",
                 logback = "1.5.18",
-                templateJooby = TemplateJooby("3.8.1"),
-                templateKtor = TemplateKtor(ktor = "3.1.3"),
-                templateMicronaut = TemplateMicronaut(micronaut = "4.8.2", micronautPlugins = "4.5.3"),
-                templateSpring = TemplateSpring(springBoot = "3.5.0"),
+                templateJooby = TemplateJooby("3.10.0"),
+                templateKtor = TemplateKtor(ktor = "3.2.1"),
+                templateMicronaut = TemplateMicronaut(micronaut = "4.9.1", micronautPlugins = "4.5.4"),
+                templateSpring = TemplateSpring(springBoot = "3.5.3"),
                 modules = emptyList()
             )
         }

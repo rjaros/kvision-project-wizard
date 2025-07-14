@@ -1,4 +1,7 @@
 systemProp.kotlinVersion=${kotlin_version}
 systemProp.kvisionVersion=${kvision_version}
 
+org.gradle.parallel=true
+org.gradle.caching=true
+org.gradle.configuration-cache=true
 kotlin.js.ir.output.granularity=per-file

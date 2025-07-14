@@ -5,4 +5,7 @@ systemProp.kvisionVersion=${kvision_version}
 logbackVersion=${logback_version}
 
 org.gradle.jvmargs=-Xmx2g
+org.gradle.parallel=true
+org.gradle.caching=true
+org.gradle.configuration-cache=true
 kotlin.js.ir.output.granularity=per-file
