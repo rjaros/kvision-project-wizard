@@ -144,7 +144,7 @@ class LibraryChoiceView(
             }
             add(JBScrollPane(list).apply {
                 alignmentX = LEFT_ALIGNMENT
-                preferredSize = Dimension(570, 400)
+                preferredSize = Dimension(470, 350)
             })
             add(Box.createRigidArea(Dimension(0, 20)))
             add(JButton("Check KVision website").apply {

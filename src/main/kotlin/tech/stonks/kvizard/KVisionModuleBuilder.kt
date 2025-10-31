@@ -112,16 +112,16 @@ class KVisionModuleBuilder : ModuleBuilder() {
             VersionApi.create().getVersionData().blockingGet()
         } catch (ex: Exception) {
             VersionData(
-                kvision = "9.1.1",
-                kotlin = "2.2.0",
+                kvision = "9.2.1",
+                kotlin = "2.3.0-Beta2",
                 coroutines = "1.10.2",
-                ksp = "2.2.0-2.0.2",
-                kiluaRpc = "0.0.35",
-                logback = "1.5.18",
-                templateJooby = TemplateJooby("3.10.0"),
-                templateKtor = TemplateKtor(ktor = "3.2.1"),
-                templateMicronaut = TemplateMicronaut(micronaut = "4.9.1", micronautPlugins = "4.5.4"),
-                templateSpring = TemplateSpring(springBoot = "3.5.3"),
+                ksp = "2.3.0",
+                kiluaRpc = "0.0.39",
+                logback = "1.5.20",
+                templateJooby = TemplateJooby("4.0.10"),
+                templateKtor = TemplateKtor(ktor = "3.3.1"),
+                templateMicronaut = TemplateMicronaut(micronaut = "4.10.0", micronautPlugins = "4.6.0"),
+                templateSpring = TemplateSpring(springBoot = "4.0.0-RC1"),
                 modules = emptyList()
             )
         }
